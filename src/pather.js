@@ -45,7 +45,7 @@
                 return getPolyValue(this.poly, x);
                 break;
             case 'bezier':
-                return getBezierValue(this.bezier, (x - this.x0) / (this.xf - this.x0));
+                return getBezierYValue(this.bezier, (x - this.x0) / (this.xf - this.x0));
                 break;
         }
     };
@@ -150,17 +150,32 @@
     }
 
     /*
-     * Returns the intermediate value of the bezier curve
+     * Returns the intermediate point of the bezier curve
      */
     function getBezierValue(bezierPoints, percent) {
-        var p01 = getPercentPoint(bezierPoints[0], bezierPoints[1], percent);
-        var p12 = getPercentPoint(bezierPoints[1], bezierPoints[2], percent);
-        var p23 = getPercentPoint(bezierPoints[2], bezierPoints[3], percent);
+        var p01 = getPercentValue(bezierPoints[0], bezierPoints[1], percent);
+        var p12 = getPercentValue(bezierPoints[1], bezierPoints[2], percent);
+        var p23 = getPercentValue(bezierPoints[2], bezierPoints[3], percent);
 
-        var p01_12 = getPercentPoint(p01, p12, percent);
-        var p12_23 = getPercentPoint(p12, p23, percent);
+        var p01_12 = getPercentValue(p01, p12, percent);
+        var p12_23 = getPercentValue(p12, p23, percent);
 
-        return getPercentPoint(p01_12, p12_23, percent)[1];
+        return getPercentValue(p01_12, p12_23, percent);
+    }
+
+
+    /*
+     * Returns the intermediate Y value of the bezier curve
+     */
+    function getBezierYValue(bezierPoints, percent) {
+        var y01 = getPercentValue(bezierPoints[0][1], bezierPoints[1][1], percent);
+        var y12 = getPercentValue(bezierPoints[1][1], bezierPoints[2][1], percent);
+        var y23 = getPercentValue(bezierPoints[2][1], bezierPoints[3][1], percent);
+
+        var y01_12 = getPercentValue(y01, y12, percent);
+        var y12_23 = getPercentValue(y12, y23, percent);
+
+        return getPercentValue(y01_12, y12_23, percent);
     }
 
     /*
@@ -169,6 +184,13 @@
     function getPercentPoint(p1, p2, percent) {
         return [ p1[0] + percent * (p2[0] - p1[0]),
                  p1[1] + percent * (p2[1] - p1[1]) ];
+    }
+
+    /*
+     * Get the point in a percentage between 2 values
+     */
+    function getPercentValue(v1, v2, percent) {
+        return v1 + percent * (v2 - v1);
     }
 }());
 
